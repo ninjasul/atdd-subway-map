@@ -52,7 +52,6 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-
     private ExtractableResponse<Response> createLine(LineRequest request) {
         return RestAssured.given().log().all()
             .body(request)
