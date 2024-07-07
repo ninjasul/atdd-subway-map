@@ -3,6 +3,7 @@ package subway.line.application.dto;
 import java.util.List;
 
 import subway.StationResponse;
+import subway.line.domain.Line;
 
 public class LineResponse {
     private Long id;
@@ -52,5 +53,13 @@ public class LineResponse {
 
     public void setStations(List<StationResponse> stations) {
         this.stations = stations;
+    }
+
+    public static LineResponse from(Line line) {
+        List<StationResponse> stations = List.of(
+            new StationResponse(line.getUpStation().getId(), line.getUpStation().getName()),
+            new StationResponse(line.getDownStation().getId(), line.getDownStation().getName())
+        );
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 }

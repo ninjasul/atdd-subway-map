@@ -1,20 +1,17 @@
 package subway;
 
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -28,7 +25,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = createStation("강남역");
+        ExtractableResponse<Response> response = TestFixture.createStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -46,7 +43,7 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithEmptyName() {
         // when
-        ExtractableResponse<Response> response = createStation(null);
+        ExtractableResponse<Response> response = TestFixture.createStation(null);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -64,11 +61,11 @@ public class StationAcceptanceTest {
         String stationNameGangnam = "강남역";
         String stationNameYeoksam = "역삼역";
 
-        createStation(stationNameGangnam);
-        createStation(stationNameYeoksam);
+        TestFixture.createStation(stationNameGangnam);
+        TestFixture.createStation(stationNameYeoksam);
 
         // when
-        ExtractableResponse<Response> response = getAllStations();
+        ExtractableResponse<Response> response = TestFixture.getAllStations();
 
         // then
         List<String> stationNames = response.jsonPath().getList("name", String.class);
@@ -84,16 +81,16 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse<Response> response = createStation("강남역");
+        ExtractableResponse<Response> response = TestFixture.createStation("강남역");
 
         String location = response.header("Location");
         Long stationId = Long.parseLong(location.split("/stations/")[1]);
 
         // when
-        deleteStation(stationId);
+        TestFixture.deleteStation(stationId);
 
         // then
-        ExtractableResponse<Response> allStations = getAllStations();
+        ExtractableResponse<Response> allStations = TestFixture.getAllStations();
         List<String> stationNames = allStations.jsonPath().getList("name", String.class);
         assertThat(stationNames).doesNotContain("강남역");
     }
@@ -102,7 +99,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteNonExistingStation() {
         // when
-        ExtractableResponse<Response> response = deleteStation(999L);
+        ExtractableResponse<Response> response = TestFixture.deleteStation(999L);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -112,55 +109,18 @@ public class StationAcceptanceTest {
     @Test
     void deleteAlreadyDeletedStation() {
         // given
-        ExtractableResponse<Response> response = createStation("강남역");
+        ExtractableResponse<Response> response = TestFixture.createStation("강남역");
 
         String location = response.header("Location");
         Long stationId = Long.parseLong(location.split("/stations/")[1]);
 
-        deleteStation(stationId);
+        TestFixture.deleteStation(stationId);
 
         // when
-        ExtractableResponse<Response> secondDeleteResponse = deleteStation(stationId);
+        ExtractableResponse<Response> secondDeleteResponse = TestFixture.deleteStation(stationId);
 
         // then
         assertThat(secondDeleteResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private ExtractableResponse<Response> createStation(String stationName) {
-        Map<String, String> station = new HashMap<>();
-        station.put("name", stationName);
-
-        return RestAssured
-            .given()
-            .log().all()
-            .body(station)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when()
-            .post("/stations")
-            .then()
-            .log().all()
-            .extract();
-    }
-
-    private ExtractableResponse<Response> getAllStations() {
-        return RestAssured
-            .given()
-            .log().all()
-            .when()
-            .get("/stations")
-            .then()
-            .log().all()
-            .extract();
-    }
-
-    private ExtractableResponse<Response> deleteStation(Long stationId) {
-        return RestAssured
-            .given()
-            .log().all()
-            .when()
-            .delete("/stations/" + stationId)
-            .then()
-            .log().all()
-            .extract();
-    }
 }

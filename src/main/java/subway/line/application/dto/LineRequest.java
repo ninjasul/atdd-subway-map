@@ -1,32 +1,32 @@
 package subway.line.application.dto;
 
 public class LineRequest {
-    private String stationName;
+    private String name;
     private String color;
     private Long upStationId;
     private Long downStationId;
     private Integer distance;
 
     public LineRequest(
-        String stationName,
+        String name,
         String color,
         Long upStationId,
         Long downStationId,
         Integer distance
     ) {
-        this.stationName = stationName;
+        this.name = name;
         this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
     }
 
-    public String getStationName() {
-        return stationName;
+    public String getName() {
+        return name;
     }
 
-    public void setStationName(String stationName) {
-        this.stationName = stationName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getColor() {
