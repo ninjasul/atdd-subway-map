@@ -11,4 +11,8 @@ public interface LineService {
     List<LineResponse> findAllLines();
 
     LineResponse saveLine(LineRequest lineRequest);
+
+    void updateLine(Long id, LineRequest lineRequest);
+
+    void deleteLineById(Long id);
 }

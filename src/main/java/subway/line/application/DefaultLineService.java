@@ -59,4 +59,21 @@ public class DefaultLineService implements LineService {
             .orElseThrow(() -> new IllegalArgumentException("노선을 찾을 수 없습니다."));
         return LineResponse.from(line);
     }
+
+
+    @Override
+    @Transactional
+    public void updateLine(Long id, LineRequest lineRequest) {
+        lineRepository.save(
+            lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("노선을 찾을 수 없습니다."))
+                .getUpdated(lineRequest.getName(), lineRequest.getColor())
+        );
+    }
+
+    @Override
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }

@@ -74,7 +74,7 @@ public class TestFixture {
             .extract();
     }
 
-    private ExtractableResponse<Response> updateLine(Long id, LineRequest request) {
+    public static ExtractableResponse<Response> updateLine(Long id, LineRequest request) {
         return RestAssured.given().log().all()
             .body(request)
             .contentType(MediaType.APPLICATION_JSON_VALUE)

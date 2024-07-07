@@ -102,4 +102,102 @@ public class LineAcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
+
+
+    @DisplayName("지하철 노선을 수정한다")
+    @Test
+    void testUpdateLine() {
+        // given
+        createStation("강남역");
+        createStation("역삼역");
+        ExtractableResponse<Response> createResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+        Long lineId = createResponse.jsonPath().getLong("id");
+
+        // when
+        LineRequest updateRequest = new LineRequest("신분당선", "bg-blue-600", 1L, 2L, 10);
+        ExtractableResponse<Response> response = updateLine(lineId, updateRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        LineResponse updatedLine = TestFixture.getLine(lineId).jsonPath().getObject(".", LineResponse.class);
+        assertThat(updatedLine.getName()).isEqualTo("신분당선");
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 수정할 때 실패한다")
+    @Test
+    void testUpdateNonExistentLine() {
+        // when
+        LineRequest updateRequest = new LineRequest("신분당선", "bg-blue-600", 1L, 2L, 10);
+        ExtractableResponse<Response> response = updateLine(999L, updateRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("삭제된 지하철 노선을 수정할 때 실패한다")
+    @Test
+    void testUpdateDeletedLine() {
+        // given
+        createStation("강남역");
+        createStation("역삼역");
+        ExtractableResponse<Response> createResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+        Long lineId = createResponse.jsonPath().getLong("id");
+        deleteLine(lineId);
+
+        // when
+        LineRequest updateRequest = new LineRequest("신분당선", "bg-blue-600", 1L, 2L, 10);
+        ExtractableResponse<Response> response = updateLine(lineId, updateRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("지하철 노선을 삭제한다")
+    @Test
+    void testDeleteLine() {
+        // given
+        createStation("강남역");
+        createStation("역삼역");
+        ExtractableResponse<Response> createResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+        Long lineId = createResponse.jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = deleteLine(lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // then
+        List<LineResponse> lines = TestFixture.getAllLines().jsonPath().getList(".", LineResponse.class);
+        assertThat(lines).isEmpty();
+    }
+
+    @DisplayName("존재하지 않는 지하철 노선을 삭제할 때 실패한다")
+    @Test
+    void testDeleteNonExistentLine() {
+        // when
+        ExtractableResponse<Response> response = deleteLine(999L);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("이미 삭제된 지하철 노선을 다시 삭제할 때 실패한다")
+    @Test
+    void testDeleteAlreadyDeletedLine() {
+        // given
+        createStation("강남역");
+        createStation("역삼역");
+        ExtractableResponse<Response> createResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+        Long lineId = createResponse.jsonPath().getLong("id");
+
+        // when
+        deleteLine(lineId);
+        ExtractableResponse<Response> response = deleteLine(lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 }

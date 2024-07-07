@@ -73,4 +73,10 @@ public class Line {
     public int getDistance() {
         return distance;
     }
+
+    public Line getUpdated(String name, String color) {
+        this.name = name;
+        this.color = color;
+        return this;
+    }
 }
