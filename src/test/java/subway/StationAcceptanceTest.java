@@ -28,8 +28,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        String stationName = "강남역";
-        ExtractableResponse<Response> response = createStation(stationName);
+        ExtractableResponse<Response> response = createStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
