@@ -1,6 +1,7 @@
 package subway;
 
 import static org.assertj.core.api.Assertions.*;
+import static subway.TestFixture.*;
 
 import java.util.List;
 
@@ -21,14 +22,14 @@ import subway.line.application.dto.LineResponse;
 public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다")
     @Test
-    void createLine() {
+    void testCreateLine() {
         // given
-        TestFixture.createStation("강남역");
-        TestFixture.createStation("역삼역");
+        createStation("강남역");
+        createStation("역삼역");
         LineRequest request = new LineRequest("2호선", "bg-red-600", 1L, 2L, 10);
 
         // when
-        ExtractableResponse<Response> response = TestFixture.createLine(request);
+        ExtractableResponse<Response> response = createLine(request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -41,13 +42,13 @@ public class LineAcceptanceTest {
 
     @DisplayName("존재하지 않는 역 ID로 지하철 노선을 생성할 때 실패한다")
     @Test
-    void createLineWithNonExistentStationId() {
+    void testCreateLineWithNonExistentStationId() {
         // given
-        TestFixture.createStation("강남역");
+        createStation("강남역");
         LineRequest request = new LineRequest("신분당선", "bg-red-600", 999L, 2L, 10);
 
         // when
-        ExtractableResponse<Response> response = TestFixture.createLine(request);
+        ExtractableResponse<Response> response = createLine(request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -55,15 +56,15 @@ public class LineAcceptanceTest {
 
     @DisplayName("지하철 노선 목록을 조회한다")
     @Test
-    void getLines() {
+    void testGetLines() {
         // given
-        TestFixture.createStation("강남역");
-        TestFixture.createStation("역삼역");
-        TestFixture.createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+        createStation("강남역");
+        createStation("역삼역");
+        createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
 
-        TestFixture.createStation("수서역");
-        TestFixture.createStation("가천대역");
-        TestFixture.createLine(new LineRequest("분당선", "bg-green-600", 3L, 4L, 20));
+        createStation("수서역");
+        createStation("가천대역");
+        createLine(new LineRequest("분당선", "bg-green-600", 3L, 4L, 20));
 
         // when
         ExtractableResponse<Response> response = TestFixture.getAllLines();
@@ -77,11 +78,11 @@ public class LineAcceptanceTest {
 
     @DisplayName("지하철 노선을 조회한다")
     @Test
-    void getLine() {
+    void testGetLine() {
         // given
-        TestFixture.createStation("강남역");
-        TestFixture.createStation("역삼역");
-        ExtractableResponse<Response> createResponse = TestFixture.createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+        createStation("강남역");
+        createStation("역삼역");
+        ExtractableResponse<Response> createResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
         Long lineId = createResponse.jsonPath().getLong("id");
 
         // when
@@ -94,7 +95,7 @@ public class LineAcceptanceTest {
 
     @DisplayName("존재하지 않는 지하철 노선을 조회할 때 실패한다")
     @Test
-    void getNonExistentLine() {
+    void testGetNonExistentLine() {
         // when
         ExtractableResponse<Response> response = TestFixture.getLine(999L);
 
