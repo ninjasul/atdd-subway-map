@@ -42,7 +42,7 @@ public class StationAcceptanceTest {
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
-    @DisplayName("이름이 없는 지하철역을 생성 실패한다")
+    @DisplayName("이름이 없는 지하철역을 생성 시도 한다")
     @Test
     void createStationWithEmptyName() {
         // when
