@@ -25,7 +25,7 @@ public class LineAcceptanceTest {
         // given
         TestFixture.createStation("강남역");
         TestFixture.createStation("역삼역");
-        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        LineRequest request = new LineRequest("2호선", "bg-red-600", 1L, 2L, 10);
 
         // when
         ExtractableResponse<Response> response = TestFixture.createLine(request);
@@ -36,7 +36,7 @@ public class LineAcceptanceTest {
         // then
         List<LineResponse> lines = TestFixture.getAllLines().jsonPath().getList(".", LineResponse.class);
         assertThat(lines).hasSize(1);
-        assertThat(lines.get(0).getName()).isEqualTo("신분당선");
+        assertThat(lines.get(0).getName()).isEqualTo("2호선");
     }
 
     @DisplayName("존재하지 않는 역 ID로 지하철 노선을 생성할 때 실패한다")
@@ -59,7 +59,7 @@ public class LineAcceptanceTest {
         // given
         TestFixture.createStation("강남역");
         TestFixture.createStation("역삼역");
-        TestFixture.createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
+        TestFixture.createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
 
         TestFixture.createStation("수서역");
         TestFixture.createStation("가천대역");
@@ -71,7 +71,7 @@ public class LineAcceptanceTest {
         // then
         List<LineResponse> lines = response.jsonPath().getList(".", LineResponse.class);
         assertThat(lines).hasSize(2);
-        assertThat(lines.get(0).getName()).isEqualTo("신분당선");
+        assertThat(lines.get(0).getName()).isEqualTo("2호선");
         assertThat(lines.get(1).getName()).isEqualTo("분당선");
     }
 
@@ -81,7 +81,7 @@ public class LineAcceptanceTest {
         // given
         TestFixture.createStation("강남역");
         TestFixture.createStation("역삼역");
-        ExtractableResponse<Response> createResponse = TestFixture.createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
+        ExtractableResponse<Response> createResponse = TestFixture.createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
         Long lineId = createResponse.jsonPath().getLong("id");
 
         // when
@@ -89,7 +89,7 @@ public class LineAcceptanceTest {
 
         // then
         LineResponse line = response.jsonPath().getObject(".", LineResponse.class);
-        assertThat(line.getName()).isEqualTo("신분당선");
+        assertThat(line.getName()).isEqualTo("2호선");
     }
 
     @DisplayName("존재하지 않는 지하철 노선을 조회할 때 실패한다")

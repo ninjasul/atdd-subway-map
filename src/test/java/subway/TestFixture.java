@@ -73,4 +73,20 @@ public class TestFixture {
             .then().log().all()
             .extract();
     }
+
+    private ExtractableResponse<Response> updateLine(Long id, LineRequest request) {
+        return RestAssured.given().log().all()
+            .body(request)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().put("/lines/" + id)
+            .then().log().all()
+            .extract();
+    }
+
+    public static ExtractableResponse<Response> deleteLine(Long id) {
+        return RestAssured.given().log().all()
+            .when().delete("/lines/" + id)
+            .then().log().all()
+            .extract();
+    }
 }
