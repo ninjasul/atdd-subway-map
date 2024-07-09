@@ -10,13 +10,20 @@ import subway.Station;
 import subway.StationRepository;
 import subway.line.application.dto.LineRequest;
 import subway.line.application.dto.LineResponse;
+import subway.line.application.dto.SectionRequest;
 import subway.line.domain.Line;
 import subway.line.domain.LineRepository;
 import subway.line.domain.LineService;
+import subway.line.domain.Section;
 
 @Service
 @Transactional(readOnly = true)
 public class DefaultLineService implements LineService {
+    public static final String LINE_NOT_FOUND_MESSAGE = "노선을 찾을 수 없습니다.";
+
+    public static final String STATION_NOT_FOUND_MESSAGE = "역을 찾을 수 없습니다.";
+    
+    
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
@@ -28,19 +35,16 @@ public class DefaultLineService implements LineService {
     @Override
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-            .orElseThrow(() -> new IllegalArgumentException("상행 종점역을 찾을 수 없습니다."));
-
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-            .orElseThrow(() -> new IllegalArgumentException("하행 종점역을 찾을 수 없습니다."));
+        final Station upStation = findStationOrElseThrow(lineRequest.getUpStationId());
+        final Station downStation = findStationOrElseThrow(lineRequest.getDownStationId());
+        final Section section = new Section(upStation, downStation, lineRequest.getDistance());
 
         Line line = new Line(
             lineRequest.getName(),
-            lineRequest.getColor(),
-            upStation,
-            downStation,
-            lineRequest.getDistance()
+            lineRequest.getColor()
         );
+
+        line.addSection(section);
 
         Line savedLine = lineRepository.save(line);
         return LineResponse.from(savedLine);
@@ -55,8 +59,7 @@ public class DefaultLineService implements LineService {
 
     @Override
     public LineResponse findLineById(Long id) {
-        Line line = lineRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("노선을 찾을 수 없습니다."));
+        Line line = findLineOrElseThrow(id);
         return LineResponse.from(line);
     }
 
@@ -64,16 +67,45 @@ public class DefaultLineService implements LineService {
     @Override
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        lineRepository.save(
-            lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("노선을 찾을 수 없습니다."))
-                .getUpdated(lineRequest.getName(), lineRequest.getColor())
-        );
+        lineRepository.save(findLineOrElseThrow(id).getUpdated(lineRequest.getName(), lineRequest.getColor()));
     }
 
     @Override
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+
+    @Override
+    @Transactional
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = findLineOrElseThrow(lineId);
+        Station upStation = findStationOrElseThrow(sectionRequest.getUpStationId());
+        Station downStation = findStationOrElseThrow(sectionRequest.getDownStationId());
+        
+        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+        
+        lineRepository.save(line);
+    }
+
+    @Override
+    @Transactional
+    public void removeSection(Long lineId, Long stationId) {
+        Line line = findLineOrElseThrow(lineId);
+        Station station = findStationOrElseThrow(stationId);
+
+        line.removeSection(station);
+        lineRepository.save(line);
+    }
+
+    private Line findLineOrElseThrow(Long lineId) {
+        return lineRepository.findById(lineId)
+            .orElseThrow(() -> new IllegalArgumentException(LINE_NOT_FOUND_MESSAGE));
+    }
+
+    private Station findStationOrElseThrow(Long stationId) {
+        return stationRepository.findById(stationId)
+            .orElseThrow(() -> new IllegalArgumentException(STATION_NOT_FOUND_MESSAGE));
     }
 }
