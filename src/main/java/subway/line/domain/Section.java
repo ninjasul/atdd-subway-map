@@ -37,18 +37,24 @@ public class Section {
     public Section() {
     }
 
-
-    public Section(Station upStation, Station downStation, Integer distance) {
+    public Section(Long id, Line line, Station upStation, Station downStation, Integer distance) {
+        this.id = id;
+        this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
+    public Section(Station upStation, Station downStation, Integer distance) {
+        this(null, null, upStation, downStation, distance);
+    }
+
     public Section(Line line, Station upStation, Station downStation, Integer distance) {
-        this.line = line;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        this(null, line, upStation, downStation, distance);
+    }
+
+    public static SectionBuilder builder() {
+        return new SectionBuilder();
     }
 
     public Long getId() {
@@ -90,6 +96,46 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(line, upStation, downStation, distance);
+    }
+
+    public static class SectionBuilder {
+        private Long id;
+        private Line line;
+        private Station upStation;
+        private Station downStation;
+        private Integer distance;
+
+        public SectionBuilder() {
+        }
+
+        public SectionBuilder id(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public SectionBuilder line(Line line) {
+            this.line = line;
+            return this;
+        }
+
+        public SectionBuilder upStation(Station upStation) {
+            this.upStation = upStation;
+            return this;
+        }
+
+        public SectionBuilder downStation(Station downStation) {
+            this.downStation = downStation;
+            return this;
+        }
+
+        public SectionBuilder distance(Integer distance) {
+            this.distance = distance;
+            return this;
+        }
+
+        public Section build() {
+            return new Section(this.id, this.line, this.upStation, this.downStation, this.distance);
+        }
     }
 }
 

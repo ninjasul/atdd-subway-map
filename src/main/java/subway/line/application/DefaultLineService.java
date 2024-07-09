@@ -37,7 +37,11 @@ public class DefaultLineService implements LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         final Station upStation = findStationOrElseThrow(lineRequest.getUpStationId());
         final Station downStation = findStationOrElseThrow(lineRequest.getDownStationId());
-        final Section section = new Section(upStation, downStation, lineRequest.getDistance());
+        final Section section = new Section.SectionBuilder()
+            .upStation(upStation)
+            .downStation(downStation)
+            .distance(lineRequest.getDistance())
+            .build();
 
         Line line = new Line(
             lineRequest.getName(),
@@ -84,8 +88,15 @@ public class DefaultLineService implements LineService {
         Station upStation = findStationOrElseThrow(sectionRequest.getUpStationId());
         Station downStation = findStationOrElseThrow(sectionRequest.getDownStationId());
         
-        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
-        
+        line.addSection(
+            new Section.SectionBuilder()
+                .line(line)
+                .upStation(upStation)
+                .downStation(downStation)
+                .distance(sectionRequest.getDistance())
+                .build()
+        );
+
         lineRepository.save(line);
     }
 
