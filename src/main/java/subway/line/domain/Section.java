@@ -83,10 +83,14 @@ public class Section {
 
     @Override
     public boolean equals(Object object) {
-        if (this == object)
+        if (this == object) {
             return true;
-        if (object == null || getClass() != object.getClass())
+        }
+
+        if (object == null || getClass() != object.getClass()) {
             return false;
+        }
+
         Section section = (Section)object;
         return Objects.equals(line, section.line)
             && Objects.equals(upStation, section.upStation) && Objects.equals(downStation,
