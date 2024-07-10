@@ -60,8 +60,8 @@ public class LineResponse {
     public static LineResponse from(Line line) {
         List<StationResponse> stations = line.getSections().stream()
             .flatMap(section -> Stream.of(
-                new StationResponse(section.getUpStation().getId(), section.getUpStation().getName()),
-                new StationResponse(section.getDownStation().getId(), section.getDownStation().getName())
+                new StationResponse(section.getUpStationId(), section.getUpStationName()),
+                new StationResponse(section.getDownStationId(), section.getDownStationName())
             ))
             .distinct()
             .collect(Collectors.toList());

@@ -50,7 +50,7 @@ public class SectionResponse {
     public static SectionResponse from(Section section) {
         return new SectionResponseBuilder()
             .sectionId(section.getId())
-            .upStationId(section.getUpStation().getId())
+            .upStationId(section.getUpStationId())
             .downStationId(section.getDownStationId())
             .distance(section.getDistance())
             .build();
@@ -88,11 +88,6 @@ public class SectionResponse {
 
         public SectionResponse build() {
             return new SectionResponse(this.sectionId, this.upStationId, this.downStationId, this.distance);
-        }
-
-        public String toString() {
-            return "SectionResponse.SectionResponseBuilder(sectionId=" + this.sectionId + ", upStationId="
-                + this.upStationId + ", downStationId=" + this.downStationId + ", distance=" + this.distance + ")";
         }
     }
 }
