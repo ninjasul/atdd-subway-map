@@ -34,7 +34,7 @@ public class Section {
     @Column(nullable = false)
     private Integer distance;
 
-    public Section() {
+    protected Section() {
     }
 
     public Section(Long id, Line line, Station upStation, Station downStation, Integer distance) {
@@ -67,6 +67,15 @@ public class Section {
 
     public Station getUpStation() {
         return upStation;
+    }
+
+    public Long getUpStationId() {
+        return upStation.getId();
+    }
+
+
+    public Long getDownStationId() {
+        return downStation.getId();
     }
 
     public Station getDownStation() {

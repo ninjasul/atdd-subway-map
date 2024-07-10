@@ -1,12 +1,9 @@
 package subway.line.ui;
 
 import java.net.URI;
-import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import subway.line.application.dto.LineRequest;
 import subway.line.application.dto.LineResponse;
 import subway.line.application.dto.SectionRequest;
+import subway.line.application.dto.SectionResponse;
 import subway.line.domain.LineCommandService;
-import subway.line.domain.LineQueryService;
 
 @RestController
 @RequestMapping("/lines")
@@ -33,7 +30,11 @@ public class LineCommandController {
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineCommandService.saveLine(lineRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+        return ResponseEntity.created(URI.create(getLineUriString(line))).body(line);
+    }
+
+    private String getLineUriString(LineResponse line) {
+        return String.format("/lines/%s", line.getId());
     }
 
     @PutMapping("/{id}")
@@ -49,9 +50,13 @@ public class LineCommandController {
     }
 
     @PostMapping("/{lineId}/sections")
-    public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        lineCommandService.addSection(lineId, sectionRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<SectionResponse> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        SectionResponse section = lineCommandService.addSection(lineId, sectionRequest);
+        return ResponseEntity.created(URI.create(getSectionUriString(section))).body(section);
+    }
+
+    private String getSectionUriString(SectionResponse section) {
+        return String.format("/lines/%s/sections/%s", section, section.getSectionId());
     }
 
     @DeleteMapping("/{lineId}/sections")

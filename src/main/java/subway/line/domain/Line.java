@@ -64,4 +64,8 @@ public class Line {
     public List<Section> getSections() {
         return sections.toUnmodifiableList();
     }
+
+    public Section getLastSection() {
+        return sections.getLastSection();
+    }
 }

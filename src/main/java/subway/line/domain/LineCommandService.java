@@ -5,6 +5,7 @@ import java.util.List;
 import subway.line.application.dto.LineRequest;
 import subway.line.application.dto.LineResponse;
 import subway.line.application.dto.SectionRequest;
+import subway.line.application.dto.SectionResponse;
 
 public interface LineCommandService {
     LineResponse saveLine(LineRequest lineRequest);
@@ -13,7 +14,7 @@ public interface LineCommandService {
 
     void deleteLineById(Long id);
 
-    void addSection(Long lineId, SectionRequest sectionRequest);
+    SectionResponse addSection(Long lineId, SectionRequest sectionRequest);
 
     void removeSection(Long lineId, Long stationId);
 }

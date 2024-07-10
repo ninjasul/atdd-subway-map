@@ -73,4 +73,12 @@ public class Sections {
     public List<Section> toUnmodifiableList() {
         return List.copyOf(sections);
     }
+
+    public Section getLastSection() {
+        if (sections.isEmpty()) {
+            return null;
+        }
+
+        return sections.get(sections.size() - 1);
+    }
 }

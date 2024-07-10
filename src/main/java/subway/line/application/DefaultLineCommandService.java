@@ -11,6 +11,7 @@ import subway.StationRepository;
 import subway.line.application.dto.LineRequest;
 import subway.line.application.dto.LineResponse;
 import subway.line.application.dto.SectionRequest;
+import subway.line.application.dto.SectionResponse;
 import subway.line.domain.Line;
 import subway.line.domain.LineCommandService;
 import subway.line.domain.LineQueryService;
@@ -65,7 +66,7 @@ public class DefaultLineCommandService implements LineCommandService {
 
 
     @Override
-    public void addSection(Long lineId, SectionRequest sectionRequest) {
+    public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findLineOrElseThrow(lineId);
         Station upStation = findStationOrElseThrow(sectionRequest.getUpStationId());
         Station downStation = findStationOrElseThrow(sectionRequest.getDownStationId());
@@ -80,6 +81,7 @@ public class DefaultLineCommandService implements LineCommandService {
         );
 
         lineRepository.save(line);
+        return SectionResponse.from(line.getLastSection());
     }
 
     @Override
