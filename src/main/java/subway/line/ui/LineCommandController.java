@@ -18,55 +18,45 @@ import org.springframework.web.bind.annotation.RestController;
 import subway.line.application.dto.LineRequest;
 import subway.line.application.dto.LineResponse;
 import subway.line.application.dto.SectionRequest;
-import subway.line.domain.LineService;
+import subway.line.domain.LineCommandService;
+import subway.line.domain.LineQueryService;
 
 @RestController
 @RequestMapping("/lines")
-public class LineController {
-    private final LineService lineService;
+public class LineCommandController {
+    private final LineCommandService lineCommandService;
 
-    public LineController(LineService lineService) {
-        this.lineService = lineService;
+    public LineCommandController(LineCommandService lineCommandService) {
+        this.lineCommandService = lineCommandService;
     }
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        LineResponse line = lineService.saveLine(lineRequest);
+        LineResponse line = lineCommandService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
-    @GetMapping
-    public ResponseEntity<List<LineResponse>> showLines() {
-        return ResponseEntity.ok().body(lineService.findAllLines());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        return ResponseEntity.ok().body(lineService.findLineById(id));
-    }
-
-
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.updateLine(id, lineRequest);
+        lineCommandService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        lineService.deleteLineById(id);
+        lineCommandService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{lineId}/sections")
     public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        lineService.addSection(lineId, sectionRequest);
+        lineCommandService.addSection(lineId, sectionRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/{lineId}/sections")
     public ResponseEntity<Void> removeSection(@PathVariable Long lineId, @RequestParam Long stationId) {
-        lineService.removeSection(lineId, stationId);
+        lineCommandService.removeSection(lineId, stationId);
         return ResponseEntity.noContent().build();
     }
 }
